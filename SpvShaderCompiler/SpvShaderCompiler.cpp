@@ -179,4 +179,9 @@ bool SpvCompiler::compileGLSLFromCode(const std::string& code, const std::string
 	return false;
 }
 
+std::vector<unsigned int> SpvCompiler::getSpirV()
+{
+	return spirV;
+}
+
 

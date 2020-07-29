@@ -12,6 +12,8 @@ public:
 	bool compileGLSLFromFile(const std::string& path);
     bool compileGLSLFromCode(const std::string& code, const std::string& shaderType);
 
+    std::vector<unsigned int> getSpirV();
+
 private:
 	std::string getFilePath(const std::string& s);
 	std::string getFileName(const std::string& s);
