@@ -42,12 +42,12 @@ Expects GLSL shader code in a string and a shader type string.
 <br/>
 
 Valid shader types are:
-- "vert" for Vertex Shader
-- "tesc" for Tesselation Control Shader
-- "tese" for Tesselation Evaluation Shader
-- "geom" for Geometry Shader
-- "frag" for Fragment Shader
-- "comp" for Compute Shader
+- **"vert"** for Vertex Shader
+- **"tesc"** for Tesselation Control Shader
+- **"tese"** for Tesselation Evaluation Shader
+- **"geom"** for Geometry Shader
+- **"frag"** for Fragment Shader
+- **"comp"** for Compute Shader
 <br/>
 
 Both functions return true on success and false on error.
