@@ -1,5 +1,4 @@
-﻿
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 # glslang
 set(LIB_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external)
@@ -9,7 +8,16 @@ add_subdirectory(${LIB_DIRECTORY}/glslang)
 include_directories(${LIB_DIRECTORY}/glslang/glslang)
 
 # Shader compiler static library
-add_library (SpvShaderCompiler "SpvShaderCompiler.cpp" "SpvShaderCompiler.h")
+
+set(Headers
+    "SpvShaderCompiler.h"
+)
+
+set(Sources
+    "SpvShaderCompiler.cpp"
+)
+
+add_library (SpvShaderCompiler STATIC ${Sources} ${Headers})
 
 target_link_libraries(SpvShaderCompiler glslang SPIRV)
 
