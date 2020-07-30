@@ -1,5 +1,5 @@
 # SpvShaderCompiler
-Online compiler from GLSL shader code to SPIR-V
+**Online compiler from GLSL shader code to SPIR-V**
 
 Based on: https://forestsharp.com/glslang-cpp/
 
