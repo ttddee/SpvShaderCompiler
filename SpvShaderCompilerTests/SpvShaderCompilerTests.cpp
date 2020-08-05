@@ -123,7 +123,7 @@ TEST_F(SpvShaderCompilerTests, compileGLSLFromCode_CompareToOutputOfGlslangValid
             imageStore(resultImage, ivec2(gl_GlobalInvocationID.xy), res);
         } )";
 
-    std::string codeString= std::string(code);
+    auto codeString = std::string(code);
 
     bool result = compiler.compileGLSLFromCode(codeString, "comp");
     auto spirvCompiled = compiler.getSpirV();
@@ -183,7 +183,7 @@ TEST_F(SpvShaderCompilerTests, compileGLSLFromCode_CompileCodeWithErrors)
             imageStore(resultImage, ivec2(gl_GlobalInvocationID.xy), res);
         } )";
 
-    std::string codeString = std::string(code);
+    auto codeString = std::string(code);
 
     bool result = compiler.compileGLSLFromCode(codeString, "comp");
 
