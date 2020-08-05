@@ -18,16 +18,5 @@ private:
     struct Impl;
     std::unique_ptr<Impl> impl;
 
-	/*std::string getFilePath(const std::string& s);
-	std::string getFileName(const std::string& s);
-	std::string getFileExtension(const std::string& s);*/
-
-    //std::vector<unsigned int> spirV;
-
-	/*EShLanguage getShaderStage(const std::string& fileExtension);
-
-    bool compile(const std::string& shaderType, const std::string& shaderCode, std::vector<unsigned int>& spirV);*/
-
-    //static const TBuiltInResource defaultTBuiltInResource;
 };
 
