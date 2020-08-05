@@ -2,28 +2,163 @@
 
 #include <iostream>
 
-SpvCompiler::SpvCompiler()
+#include <glslang/Public/ShaderLang.h>
+#include <SPIRV/GlslangToSpv.h>
+#include <StandAlone/DirStackFileIncluder.h>
+#include <StandAlone/ResourceLimits.h>
+
+struct SpvCompiler::Impl
 {
-	// Initialize GLSL
-	if (!glslang::InitializeProcess())
+	Impl()
 	{
-		throw std::runtime_error("Failed to initialize glslang.");
-	}
+		// Initialize GLSL
+		if (!glslang::InitializeProcess())
+		{
+			throw std::runtime_error("Failed to initialize glslang.");
+		}
+	};
+
+	std::string getFilePath(const std::string& s);
+	std::string getFileName(const std::string& s);
+	std::string getFileExtension(const std::string& s);
+
+	EShLanguage getShaderStage(const std::string& fileExtension);
+
+	bool compile(const std::string& shaderType, const std::string& shaderCode, std::vector<unsigned int>& spirV);
+
+	std::vector<unsigned int> spirV;
+
+	const TBuiltInResource defaultTBuiltInResource = {
+		/* .MaxLights = */ 32,
+		/* .MaxClipPlanes = */ 6,
+		/* .MaxTextureUnits = */ 32,
+		/* .MaxTextureCoords = */ 32,
+		/* .MaxVertexAttribs = */ 64,
+		/* .MaxVertexUniformComponents = */ 4096,
+		/* .MaxVaryingFloats = */ 64,
+		/* .MaxVertexTextureImageUnits = */ 32,
+		/* .MaxCombinedTextureImageUnits = */ 80,
+		/* .MaxTextureImageUnits = */ 32,
+		/* .MaxFragmentUniformComponents = */ 4096,
+		/* .MaxDrawBuffers = */ 32,
+		/* .MaxVertexUniformVectors = */ 128,
+		/* .MaxVaryingVectors = */ 8,
+		/* .MaxFragmentUniformVectors = */ 16,
+		/* .MaxVertexOutputVectors = */ 16,
+		/* .MaxFragmentInputVectors = */ 15,
+		/* .MinProgramTexelOffset = */ -8,
+		/* .MaxProgramTexelOffset = */ 7,
+		/* .MaxClipDistances = */ 8,
+		/* .MaxComputeWorkGroupCountX = */ 65535,
+		/* .MaxComputeWorkGroupCountY = */ 65535,
+		/* .MaxComputeWorkGroupCountZ = */ 65535,
+		/* .MaxComputeWorkGroupSizeX = */ 1024,
+		/* .MaxComputeWorkGroupSizeY = */ 1024,
+		/* .MaxComputeWorkGroupSizeZ = */ 64,
+		/* .MaxComputeUniformComponents = */ 1024,
+		/* .MaxComputeTextureImageUnits = */ 16,
+		/* .MaxComputeImageUniforms = */ 8,
+		/* .MaxComputeAtomicCounters = */ 8,
+		/* .MaxComputeAtomicCounterBuffers = */ 1,
+		/* .MaxVaryingComponents = */ 60,
+		/* .MaxVertexOutputComponents = */ 64,
+		/* .MaxGeometryInputComponents = */ 64,
+		/* .MaxGeometryOutputComponents = */ 128,
+		/* .MaxFragmentInputComponents = */ 128,
+		/* .MaxImageUnits = */ 8,
+		/* .MaxCombinedImageUnitsAndFragmentOutputs = */ 8,
+		/* .MaxCombinedShaderOutputResources = */ 8,
+		/* .MaxImageSamples = */ 0,
+		/* .MaxVertexImageUniforms = */ 0,
+		/* .MaxTessControlImageUniforms = */ 0,
+		/* .MaxTessEvaluationImageUniforms = */ 0,
+		/* .MaxGeometryImageUniforms = */ 0,
+		/* .MaxFragmentImageUniforms = */ 8,
+		/* .MaxCombinedImageUniforms = */ 8,
+		/* .MaxGeometryTextureImageUnits = */ 16,
+		/* .MaxGeometryOutputVertices = */ 256,
+		/* .MaxGeometryTotalOutputComponents = */ 1024,
+		/* .MaxGeometryUniformComponents = */ 1024,
+		/* .MaxGeometryVaryingComponents = */ 64,
+		/* .MaxTessControlInputComponents = */ 128,
+		/* .MaxTessControlOutputComponents = */ 128,
+		/* .MaxTessControlTextureImageUnits = */ 16,
+		/* .MaxTessControlUniformComponents = */ 1024,
+		/* .MaxTessControlTotalOutputComponents = */ 4096,
+		/* .MaxTessEvaluationInputComponents = */ 128,
+		/* .MaxTessEvaluationOutputComponents = */ 128,
+		/* .MaxTessEvaluationTextureImageUnits = */ 16,
+		/* .MaxTessEvaluationUniformComponents = */ 1024,
+		/* .MaxTessPatchComponents = */ 120,
+		/* .MaxPatchVertices = */ 32,
+		/* .MaxTessGenLevel = */ 64,
+		/* .MaxViewports = */ 16,
+		/* .MaxVertexAtomicCounters = */ 0,
+		/* .MaxTessControlAtomicCounters = */ 0,
+		/* .MaxTessEvaluationAtomicCounters = */ 0,
+		/* .MaxGeometryAtomicCounters = */ 0,
+		/* .MaxFragmentAtomicCounters = */ 8,
+		/* .MaxCombinedAtomicCounters = */ 8,
+		/* .MaxAtomicCounterBindings = */ 1,
+		/* .MaxVertexAtomicCounterBuffers = */ 0,
+		/* .MaxTessControlAtomicCounterBuffers = */ 0,
+		/* .MaxTessEvaluationAtomicCounterBuffers = */ 0,
+		/* .MaxGeometryAtomicCounterBuffers = */ 0,
+		/* .MaxFragmentAtomicCounterBuffers = */ 1,
+		/* .MaxCombinedAtomicCounterBuffers = */ 1,
+		/* .MaxAtomicCounterBufferSize = */ 16384,
+		/* .MaxTransformFeedbackBuffers = */ 4,
+		/* .MaxTransformFeedbackInterleavedComponents = */ 64,
+		/* .MaxCullDistances = */ 8,
+		/* .MaxCombinedClipAndCullDistances = */ 8,
+		/* .MaxSamples = */ 4,
+
+		/* .maxMeshOutputVerticesNV = */ 256,
+		/* .maxMeshOutputPrimitivesNV = */ 512,
+		/* .maxMeshWorkGroupSizeX_NV = */ 32,
+		/* .maxMeshWorkGroupSizeY_NV = */ 1,
+		/* .maxMeshWorkGroupSizeZ_NV = */ 1,
+		/* .maxTaskWorkGroupSizeX_NV = */ 32,
+		/* .maxTaskWorkGroupSizeY_NV = */ 1,
+		/* .maxTaskWorkGroupSizeZ_NV = */ 1,
+		/* .maxMeshViewCountNV = */ 4,
+
+		/* .limits = */
+		/* .nonInductiveForLoops = */ 1,
+		/* .whileLoops = */ 1,
+		/* .doWhileLoops = */ 1,
+		/* .generalUniformIndexing = */ 1,
+		/* .generalAttributeMatrixVectorIndexing = */ 1,
+		/* .generalVaryingIndexing = */ 1,
+		/* .generalSamplerIndexing = */ 1,
+		/* .generalVariableIndexing = */ 1,
+		/* .generalConstantMatrixVectorIndexing = */ 1
+	};
+};
+
+
+
+SpvCompiler::SpvCompiler()
+	: impl(new Impl())
+{
+	
 }
 
-std::string SpvCompiler::getFilePath(const std::string& path)
+SpvCompiler::~SpvCompiler() = default;
+
+std::string SpvCompiler::Impl::getFilePath(const std::string& path)
 {
 	size_t parts = path.find_last_of("/\\");
 	return path.substr(0, parts);
 }
 
-std::string SpvCompiler::getFileName(const std::string& path)
+std::string SpvCompiler::Impl::getFileName(const std::string& path)
 {
 	size_t parts = path.find_last_of("/\\");
 	return path.substr(parts + 1);
 }
 
-std::string SpvCompiler::getFileExtension(const std::string& path)
+std::string SpvCompiler::Impl::getFileExtension(const std::string& path)
 {
 	const size_t pos = path.rfind('.');
 	if (pos == std::string::npos)
@@ -36,7 +171,7 @@ std::string SpvCompiler::getFileExtension(const std::string& path)
 	}
 }
 
-EShLanguage SpvCompiler::getShaderStage(const std::string& fileExtension)
+EShLanguage SpvCompiler::Impl::getShaderStage(const std::string& fileExtension)
 {
 	if (fileExtension == "vert")
 	{
@@ -69,7 +204,7 @@ EShLanguage SpvCompiler::getShaderStage(const std::string& fileExtension)
 	}
 }
 
-bool SpvCompiler::compile(const std::string shaderType, const std::string& shaderCode, std::vector<unsigned int>& spirV)
+bool SpvCompiler::Impl::compile(const std::string& shaderType, const std::string& shaderCode, std::vector<unsigned int>& spirV)
 {
 	auto shaderStage = getShaderStage(shaderType);
 
@@ -155,11 +290,11 @@ bool SpvCompiler::compileGLSLFromFile(const std::string& path)
 
 	std::string inputGLSL((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-	auto extension = getFileExtension(path);
+	auto extension = impl->getFileExtension(path);
 
-	spirV.clear();
+	impl->spirV.clear();
 
-	if (compile(extension, inputGLSL, spirV))
+	if (impl->compile(extension, inputGLSL, impl->spirV))
 	{
 		return true;
 	}
@@ -169,9 +304,9 @@ bool SpvCompiler::compileGLSLFromFile(const std::string& path)
 
 bool SpvCompiler::compileGLSLFromCode(const std::string& code, const std::string& shaderType)
 {
-	spirV.clear();
+	impl->spirV.clear();
 
-	if (compile(shaderType, code, spirV))
+	if (impl->compile(shaderType, code, impl->spirV))
 	{
 		return true;
 	}
@@ -181,7 +316,7 @@ bool SpvCompiler::compileGLSLFromCode(const std::string& code, const std::string
 
 std::vector<unsigned int> SpvCompiler::getSpirV()
 {
-	return spirV;
+	return impl->spirV;
 }
 
 
