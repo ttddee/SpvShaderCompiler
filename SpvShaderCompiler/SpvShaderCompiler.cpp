@@ -2,10 +2,11 @@
 
 #include <iostream>
 
-#include <glslang/Public/ShaderLang.h>
-#include <SPIRV/GlslangToSpv.h>
-#include <StandAlone/DirStackFileIncluder.h>
-#include <StandAlone/ResourceLimits.h>
+#include "external/glslang/install/include/glslang/Public/ShaderLang.h"//<glslang/Public/ShaderLang.h>
+#include "external/glslang/install/include/glslang/SPIRV/GlslangToSpv.h"
+#include "external/glslang/StandAlone/DirStackFileIncluder.h"
+#include "external/glslang/StandAlone/ResourceLimits.h"
+
 
 struct SpvCompiler::Impl
 {
