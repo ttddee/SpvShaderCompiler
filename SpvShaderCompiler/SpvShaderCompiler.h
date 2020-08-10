@@ -13,6 +13,7 @@ public:
     bool compileGLSLFromCode(const std::string& code, const std::string& shaderType);
 
     std::vector<unsigned int> getSpirV();
+    std::string getError();
 
 private:
     struct Impl;

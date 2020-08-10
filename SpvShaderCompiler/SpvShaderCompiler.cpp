@@ -29,6 +29,8 @@ struct SpvCompiler::Impl
 
 	std::vector<unsigned int> spirV;
 
+	std::string error;
+
 	const TBuiltInResource defaultTBuiltInResource = {
 		/* .MaxLights = */ 32,
 		/* .MaxClipPlanes = */ 6,
@@ -211,6 +213,8 @@ bool SpvCompiler::Impl::compile(const std::string& shaderType, const std::string
 
 	const char* inputCString = shaderCode.c_str();
 
+	error.clear();
+
 	// Create TShader and pass input to it
 	glslang::TShader shader(shaderStage);
 	shader.setStrings(&inputCString, 1);
@@ -240,9 +244,10 @@ bool SpvCompiler::Impl::compile(const std::string& shaderType, const std::string
 
 	if (!shader.preprocess(&resources, defaultVersion, ENoProfile, false, false, messages, &preprocessedGLSL, includer))
 	{
-		std::cout << "GLSL Preprocessing Failed for." << std::endl;
+		std::cout << "GLSL Preprocessing Failed for:" << std::endl;
 		std::cout << shader.getInfoLog() << std::endl;
 		std::cout << shader.getInfoDebugLog() << std::endl;
+		error.append(shader.getInfoLog());
 
 		return false;
 	}
@@ -256,6 +261,7 @@ bool SpvCompiler::Impl::compile(const std::string& shaderType, const std::string
 		std::cout << "GLSL parsing failed." << std::endl;
 		std::cout << shader.getInfoLog() << std::endl;
 		std::cout << shader.getInfoDebugLog() << std::endl;
+		error.append(shader.getInfoLog());
 
 		return false;
 	}
@@ -269,6 +275,7 @@ bool SpvCompiler::Impl::compile(const std::string& shaderType, const std::string
 		std::cout << "GLSL Linking Failed." << std::endl;
 		std::cout << shader.getInfoLog() << std::endl;
 		std::cout << shader.getInfoDebugLog() << std::endl;
+		error.append(shader.getInfoLog());
 
 		return false;
 	}
@@ -318,6 +325,11 @@ bool SpvCompiler::compileGLSLFromCode(const std::string& code, const std::string
 std::vector<unsigned int> SpvCompiler::getSpirV()
 {
 	return impl->spirV;
+}
+
+std::string SpvCompiler::getError()
+{
+	return impl->error;
 }
 
 
