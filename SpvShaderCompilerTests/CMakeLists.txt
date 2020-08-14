@@ -6,11 +6,14 @@
 
 cmake_minimum_required (VERSION 3.8)
 
-set(LIB_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external)
 
-add_subdirectory(${LIB_DIRECTORY}/googletest)
+if(WIN32)
+    set(LIB_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external)
 
-include_directories(${LIB_DIRECTORY}/googletest/googletest)
+    add_subdirectory(${LIB_DIRECTORY}/googletest)
+
+    include_directories(${LIB_DIRECTORY}/googletest/googletest)
+endif()
 
 set(Sources
 	"SpvShaderCompilerTests.cpp"

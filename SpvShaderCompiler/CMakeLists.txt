@@ -1,11 +1,15 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
-# glslang
-set(LIB_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/glslang/install/lib)
 
-set(INC_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external)
+if(WIN32)
+    # glslang
+    set(LIB_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external/glslang/install/lib)
 
-include_directories(${INC_DIRECTORY}/glslang/install/include)
+    set(INC_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/external)
+
+    include_directories(${INC_DIRECTORY}/glslang/install/include)
+endif()
+
 
 set(Headers
     "SpvShaderCompiler.h"
