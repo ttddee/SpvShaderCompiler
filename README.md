@@ -58,4 +58,11 @@ To get the compiled SPIR-V code as a vector of unsigned ints:
 ```
 compiler.getSpirV();
 ```
+<br/>
+If you want to pass in shader code as a string, the easiest thing to do is to create a string literal and convert it:
 
+```
+const char* code = R"( My awesome shader code )";
+
+auto s = std::string(code);
+```
