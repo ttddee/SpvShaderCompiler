@@ -1,8 +1,6 @@
 # SpvShaderCompiler
 **Online compiler from GLSL shader code to SPIR-V**
 
-Based on: https://forestsharp.com/glslang-cpp/
-
 This compiles GLSL shaders into SPIR-V for use in Vulkan. 
 
 CMake is configured to create a static library. To compile the project you need [glslang](https://github.com/KhronosGroup/glslang). If you also want to run the unit tests you need [googletest](https://github.com/google/googletest).
